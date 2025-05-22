@@ -53,13 +53,11 @@ def generate_payout_report(data: list) -> None:
 
 
 def main():
-    time = datetime.datetime.now()
     parser = argparse.ArgumentParser(description='Generate employee reports.')
     parser.add_argument('files', nargs='+', help='Paths to CSV files with employee data')
     parser.add_argument('--report', required=True, help='Type of report to generate')
 
     args = parser.parse_args()
-    path = ['data1.csv', 'data2.csv']
     # # Собираем всех сотрудников из файлов
     all_employees = []
     for file_path in args.files:
@@ -80,8 +78,6 @@ def main():
     # Генерация нужного отчета
     report_generators[report_type](all_employees)
 
-    time = datetime.datetime.now() - time
-    print(time.total_seconds())
 
 if __name__ == '__main__':
     main()
