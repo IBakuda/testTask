@@ -10,9 +10,6 @@ class TestEmployeeReport(unittest.TestCase):
             "id,name,email,hours_worked,department,rate\n"
             "1,John Doe,john@example.com,40,engineering,30\n"
             "2,Jane Smith,jane@example.com,35,sales,25\n"
-            "1,alice@example.com,Alice Johnson,Marketing,160,50\n"
-            "2,bob@example.com,Bob Smith,Design,150,40\n"
-            "3,carol@example.com,Carol Williams,Design,170,60\n"
         )
 
     def test_parse_csv(self):
