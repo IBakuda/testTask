@@ -4,25 +4,22 @@ from collections import defaultdict
 import datetime
 
 
-
-def parse_csv(file_path: str) -> dict[str, dict[str, str]]:
+def parse_csv(file_path: str) -> list[str: str]:
+    result = []
     with open(file_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
         res_keys = [key for key in lines[0].strip().split(',')]
-        res = {}
-        for e, line in enumerate(lines[1:], 1):
-            employee = dict(dict(zip(res_keys, line.strip().split(','))))
-            res[e] = employee
-        return res
+        for line in lines[1:]:
+            employee = dict(zip(res_keys, line.strip().split(',')))
+            result.append(employee)
+    return result
 
-
-def generate_payout_report(data: dict) -> None:
+def generate_payout_report(data: list) -> None:
 
     department_data = defaultdict(list)
-    employees = data
 
-    for emp in employees.values():
-        id: int = int(emp.pop('id', 'Unknown'))
+    for emp in data:
+        emp_id: int = int(emp.pop('id', 'Unknown'))
         department: str = emp.pop('department', 'Unknown').capitalize()
         name: str = emp.pop('name', 'Unknown')
         hours: int = int(emp.pop('hours_worked', 0))
@@ -31,7 +28,7 @@ def generate_payout_report(data: dict) -> None:
         payout = hours * rate
 
         department_data[department].append({
-            'id': id,
+            'emp_id': emp_id,
             'email': email,
             'name': name,
             'hours': hours,
@@ -49,7 +46,7 @@ def generate_payout_report(data: dict) -> None:
         for r in records:
             total_hours += r['hours']
             total_payout += r['payout']
-            print(f"{'---':<12} | {r['id']:<4} | {r['email']:<20} | {r['name']:<20} | {r['hours']:<5} | {r['rate']:<4} | ${r['payout']}")
+            print(f"{'---':<12} | {r['emp_id']:<4} | {r['email']:<20} | {r['name']:<20} | {r['hours']:<5} | {r['rate']:<4} | ${r['payout']}")
         print(f"{'total':<12} | {'':<4} | {'':<20} | {'':<20} | {total_hours:<5} | {'':<4} | ${total_payout}")
         print()
     print(f"{'---':-<88}")
@@ -62,14 +59,14 @@ def main():
     parser.add_argument('--report', required=True, help='Type of report to generate')
 
     args = parser.parse_args()
-
-    # Собираем всех сотрудников из файлов
+    path = ['data1.csv', 'data2.csv']
+    # # Собираем всех сотрудников из файлов
     all_employees = []
     for file_path in args.files:
         if not os.path.exists(file_path):
             print(f"File not found: {file_path}")
             continue
-        all_employees.append(parse_csv(file_path))
+        all_employees.extend(parse_csv(file_path)) # .extend объединение всех работников в один лист
 
     # Карта возможных отчётов
     report_generators: dict = {
@@ -81,26 +78,10 @@ def main():
         print(f"Unsupported report type: {report_type}")
         return
     # Генерация нужного отчета
-    for employee in all_employees:
-        report_generators[report_type](employee)
+    report_generators[report_type](all_employees)
 
     time = datetime.datetime.now() - time
     print(time.total_seconds())
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
